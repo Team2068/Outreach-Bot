@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import com.revrobotics.PersistMode;
@@ -18,8 +14,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Elevator extends SubsystemBase {
-  /** Creates a new Elevator. */
-  private SparkMax elevator; // Only one NEO
+  private SparkMax elevator; 
   SparkMaxConfig config;
   DigitalInput upperLimitSwitch;
   DigitalInput lowerLimitSwitch;
@@ -27,8 +22,11 @@ public class Elevator extends SubsystemBase {
   boolean top;
   boolean bottom;
 
-  public Elevator(int elevatorID1, int upperLimitSwitchID, int lowerLimitSwitchID) {
-    elevator = new SparkMax(elevatorID1, MotorType.kBrushless);
+  private double maxHeight = 1; // TODO GET MAX HEIGHT
+  private double minHeight = 0;
+
+  public Elevator(int elevatorID, int upperLimitSwitchID, int lowerLimitSwitchID) {
+    elevator = new SparkMax(elevatorID, MotorType.kBrushless);
     config = new SparkMaxConfig();
     encoder = elevator.getAbsoluteEncoder();
     upperLimitSwitch = new DigitalInput(upperLimitSwitchID);
@@ -40,11 +38,7 @@ public class Elevator extends SubsystemBase {
         .closedLoop
           .pid(0, 0, 0);
 
-   
-
     elevator.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-
   }
 
   public void stop() {
@@ -52,33 +46,33 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setVoltage(double voltage) {
-    if ((upperLimitSwitch.get()&&encoder.getVelocity()>0) || (lowerLimitSwitch.get()&&encoder.getVelocity()<0)) {// TODO: Recheck limit switch code
-      elevator.stopMotor();
-      return;
-    }
     elevator.setVoltage(voltage);
   }
 
   public void setSpeed(double speed) {
-    if ((upperLimitSwitch.get()&&encoder.getVelocity()>0) || (lowerLimitSwitch.get()&&encoder.getVelocity()<0)) {// TODO: Recheck limit switch code
-      elevator.stopMotor();
-      return;
-    }
     elevator.set(speed);
   }
 
-  public void toSetpoint(double setpoint) {
-    elevator.getClosedLoopController().setSetpoint(setpoint, ControlType.kPosition);
+  public void setPosition(double position) {
+    elevator.getClosedLoopController().setSetpoint(position, ControlType.kPosition);
+  }
+
+  public double getPosition(){
+    return elevator.getEncoder().getPosition();
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
     top = upperLimitSwitch.get();
     bottom = lowerLimitSwitch.get();
 
-    if(top || bottom){
-      elevator.stopMotor();
+    if(top){
+      elevator.getEncoder().setPosition(maxHeight);
+      stop();
+    }
+    else if(bottom){
+      elevator.getEncoder().setPosition(minHeight);
+      stop();
     }
   }
 }

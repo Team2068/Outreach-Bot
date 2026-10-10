@@ -39,7 +39,7 @@ public class Module {
     public static final double STEER_REDUCTION = 26.09;
 
     public Module(ShuffleboardLayout tab, int driveID, int steerID, int encoderID, boolean heliumEncoder) {
-        drive = new TalonFX(driveID, "Swerve");
+        drive = new TalonFX(driveID, "Swerve"); //For 2027, takes canbus instead of string
         steer = new SparkMax(steerID, MotorType.kBrushless);
         encoder = (heliumEncoder) ? new Swerve.Canand(encoderID) : new Swerve.Cancoder(encoderID);
         

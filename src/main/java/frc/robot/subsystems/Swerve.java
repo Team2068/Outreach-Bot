@@ -44,7 +44,7 @@ public class Swerve extends SubsystemBase {
     public boolean field_oritented = true;
     private final SwerveDriveKinematics kinematics;
 
-    public final Pigeon2 pigeon2 = new Pigeon2(Constants.PIGEON_ID, "Swerve");
+    public final Pigeon2 pigeon2 = new Pigeon2(Constants.PIGEON_ID, "Swerve"); //For 2027, uses canbus instead of string
 
     StructArrayPublisher<SwerveModuleState> current_states = Util.table
             .getStructArrayTopic("Current Module States", SwerveModuleState.struct).publish();

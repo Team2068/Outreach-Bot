@@ -95,6 +95,9 @@ public class AutomatedController {
 
     public void configureManual() {
         controller.back().and(manual()).onTrue(Util.Do(io.chassis::resetOdometry, io.chassis));
+
+        controller.leftBumper().and(manual()).onTrue(Util.Do(()->io.elevator.setSpeed(-0.2), io.elevator)).onFalse(Util.Do(io.elevator::stop));
+        controller.rightBumper().and(manual()).onTrue(Util.Do(()->io.elevator.setSpeed(0.2), io.elevator)).onFalse(Util.Do(io.elevator::stop));
     }
 
     void configureCharacterisaton() {
@@ -118,5 +121,4 @@ public class AutomatedController {
             return !io.chassis.active;
         }).onTrue(new InstantCommand(io.chassis::zeroAbsolute));
     }
-
 }
