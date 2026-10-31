@@ -44,8 +44,8 @@ public class Swerve {
         public static final double MAX_VELOCITY = 5.4;
         public static final double MAX_ANGULAR_VELOCITY = Math.PI / 6;
         public static final String[] LAYOUT_TITLE = { "Front Left", "Front Right", "Back Left", "Back Right" };
-        public static final int[] DRIVE_ID = { 4, 2, 5, 3 }; // FL, FR, BL, BR
-        public static final int[] STEER_ID = { 9, 7, 10, 8 }; // FL, FR, BL, BR
+        public static final int[] DRIVE_ID = { 2, 4, 3, 5 }; // FL, FR, BL, BR
+        public static final int[] STEER_ID = { 7, 9, 8, 10 }; // FL, FR, BL, BR
         public static final int[] ENCODER_ID = { 13, 11, 14, 12 }; // FL, FR, BL, BR
         public static double[] ENCODER_OFFSETS = { -0.87890625, -0.996337890625, -0.638427734375, -0.892822265625 };
         public static final int PIGEON_ID = 6;

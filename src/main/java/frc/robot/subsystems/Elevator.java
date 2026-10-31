@@ -11,13 +11,15 @@ import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Elevator extends SubsystemBase {
   private SparkMax elevator; 
   SparkMaxConfig config;
-  DigitalInput upperLimitSwitch;
-  DigitalInput lowerLimitSwitch;
+  DigitalOutput upperLimitSwitch;
+  DigitalOutput lowerLimitSwitch;
   SparkAbsoluteEncoder encoder;
   boolean top;
   boolean bottom;
@@ -29,10 +31,11 @@ public class Elevator extends SubsystemBase {
     elevator = new SparkMax(elevatorID, MotorType.kBrushless);
     config = new SparkMaxConfig();
     encoder = elevator.getAbsoluteEncoder();
-    upperLimitSwitch = new DigitalInput(upperLimitSwitchID);
-    lowerLimitSwitch = new DigitalInput(lowerLimitSwitchID);
+    upperLimitSwitch = new DigitalOutput(upperLimitSwitchID);
+    lowerLimitSwitch = new DigitalOutput(lowerLimitSwitchID);
     config// TODO: Check config values
         .idleMode(IdleMode.kBrake)
+        .inverted(true)//inverted motor here
         .smartCurrentLimit(50)
         .closedLoopRampRate(60)
         .closedLoop
@@ -50,9 +53,16 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setSpeed(double speed) {
-    elevator.set(speed);
+    if(!bottom){
+      elevator.set(speed);
+    }
+    else if(bottom && speed > 0){
+      elevator.set(speed);
+    }
+    else{
+      stop();
+    }
   }
-
   public void setPosition(double position) {
     elevator.getClosedLoopController().setSetpoint(position, ControlType.kPosition);
   }
@@ -63,16 +73,17 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    top = upperLimitSwitch.get();
-    bottom = lowerLimitSwitch.get();
+    top = !upperLimitSwitch.get();
+    bottom = !lowerLimitSwitch.get();
+
+    SmartDashboard.putBoolean("Bottom Switch", bottom);
 
     if(top){
       elevator.getEncoder().setPosition(maxHeight);
-      stop();
     }
     else if(bottom){
       elevator.getEncoder().setPosition(minHeight);
-      stop();
     }
+     
   }
 }

@@ -68,13 +68,7 @@ public class Swerve extends SubsystemBase {
 
     public boolean active = true;
 
-    public static enum swerveState {
-        DEFAULT, SCORING, SCORINGAIMBOT, PASSING
-    }
-
     public Double targetRotation = null;
-
-    public swerveState currentState = swerveState.DEFAULT;
 
     public Swerve() {
         kinematics = new SwerveDriveKinematics(
@@ -345,7 +339,5 @@ public class Swerve extends SubsystemBase {
             SmartDashboard.putNumber("Target Rotation", targetRotation * 360);
         else
             SmartDashboard.putNumber("Target Rotation", 0.0);
-
-        SmartDashboard.putString("Robot State", currentState.toString());
     }
 }

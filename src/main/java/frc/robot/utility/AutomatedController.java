@@ -1,5 +1,6 @@
 package frc.robot.utility;
 
+
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj.GenericHID;
@@ -7,7 +8,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.subsystems.Swerve.swerveState;
 
 public class AutomatedController {
     public final CommandXboxController controller;
@@ -86,11 +86,6 @@ public class AutomatedController {
         controller.back().onTrue(Util.Do(io.chassis::resetAngle, io.chassis));
         controller.povDown().and(automated())
                 .onTrue(Util.Do(() -> io.chassis.field_oritented = !io.chassis.field_oritented));
-
-        // STATE CONTROLLERS AND AIMBOT
-        controller.b().and(automated()).onTrue(Util.Do(() -> io.chassis.currentState = swerveState.SCORING));
-        controller.y().and(automated()).onTrue(Util.Do(() -> io.chassis.currentState = swerveState.PASSING));
-        controller.x().and(automated()).onTrue(Util.Do(() -> io.chassis.currentState = swerveState.PASSING));
     }
 
     public void configureManual() {
@@ -117,8 +112,10 @@ public class AutomatedController {
 
         controller.povDown().and(debug()).onTrue(Util.Do(io.chassis::toggle));
         controller.povLeft().and(debug()).onTrue(Util.Do(io.chassis::syncEncoders));
-        controller.povRight().and(debug()).and(() -> {
-            return !io.chassis.active;
-        }).onTrue(new InstantCommand(io.chassis::zeroAbsolute));
+        // controller.povRight().and(debug()).and(() -> {
+        //     return !io.chassis.active;
+        // }).onTrue(new InstantCommand(io.chassis::zeroAbsolute));
+
+        controller.povRight().and(debug()).onTrue(new InstantCommand(io.chassis::zeroAbsolute));
     }
 }

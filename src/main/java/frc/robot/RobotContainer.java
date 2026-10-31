@@ -4,17 +4,28 @@
 
 package frc.robot;
 
+import com.reduxrobotics.canand.CanandEventLoop;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.utility.AutomatedController;
+import frc.robot.commands.DefaultDrive;
+import frc.robot.utility.IO;
 
 public class RobotContainer {
+  public IO io = new IO();
+  public final AutomatedController main;
+
+  final SendableChooser<Integer> driver_selector = new SendableChooser<Integer>();
+
   public RobotContainer() {
-    configureBindings();
+    main = new AutomatedController(0, io);
+    
+    io.chassis.setDefaultCommand(new DefaultDrive(io, main.controller));
+    SmartDashboard.putData("Main Controller Mode", main.selector);
+    CanandEventLoop.getInstance();
   }
 
-  private void configureBindings() {}
-
-  public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
-  }
 }

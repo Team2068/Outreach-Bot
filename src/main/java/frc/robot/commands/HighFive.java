@@ -17,8 +17,6 @@ public class HighFive extends Command {
   @Override
   public void initialize() {
     elevator.setPosition(highfiveHeight); // figure out positions
-    new WaitCommand(2.3);
-    elevator.setPosition(0); // back to bottom
   }
 
   @Override
@@ -26,8 +24,11 @@ public class HighFive extends Command {
 
   @Override
   public void end(boolean interrupted) {
+    new WaitCommand(2.3);
+    elevator.setPosition(0);
     elevator.stop();
   }
+  
 
   @Override
   public boolean isFinished() {

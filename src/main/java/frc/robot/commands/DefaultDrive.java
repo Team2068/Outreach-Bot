@@ -3,7 +3,6 @@ package frc.robot.commands;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.Swerve.swerveState;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.Swerve.Constants;
 import frc.robot.utility.IO;
@@ -47,9 +46,8 @@ public class DefaultDrive extends Command {
     public void execute() {
         double down_scale = 1.25 - modifyAxis(controller.getLeftTriggerAxis());
         double up_scale = (Swerve.Constants.MAX_VELOCITY * .2) * modifyAxis(controller.getRightTriggerAxis());
-        double shooting = (io.chassis.currentState == swerveState.SCORING) ? 2 : 1;
 
-        double scale = (Constants.transFactor * down_scale + up_scale) / shooting;
+        double scale = (Constants.transFactor * down_scale + up_scale);
         double rot_scale = Constants.rotFactor * down_scale;
 
         double xSpeed = x_supplier.getAsDouble() * scale;
