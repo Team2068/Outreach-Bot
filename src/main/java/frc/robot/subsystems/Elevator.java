@@ -10,7 +10,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -21,8 +20,11 @@ public class Elevator extends SubsystemBase {
   DigitalOutput upperLimitSwitch;
   DigitalOutput lowerLimitSwitch;
   SparkAbsoluteEncoder encoder;
+
   boolean top;
   boolean bottom;
+  boolean upCommand;
+  boolean downCommand;
 
   private double maxHeight = 1; // TODO GET MAX HEIGHT
   private double minHeight = 0;
@@ -33,13 +35,19 @@ public class Elevator extends SubsystemBase {
     encoder = elevator.getAbsoluteEncoder();
     upperLimitSwitch = new DigitalOutput(upperLimitSwitchID);
     lowerLimitSwitch = new DigitalOutput(lowerLimitSwitchID);
-    config// TODO: Check config values
+    config
         .idleMode(IdleMode.kBrake)
-        .inverted(true)//inverted motor here
+        .inverted(true)
         .smartCurrentLimit(50)
         .closedLoopRampRate(60)
         .closedLoop
           .pid(0, 0, 0);
+
+    config.softLimit.forwardSoftLimitEnabled(true);
+    config.softLimit.forwardSoftLimit(maxHeight);
+    config.softLimit.reverseSoftLimitEnabled(true);
+    config.softLimit.reverseSoftLimit(minHeight);
+
 
     elevator.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
@@ -53,16 +61,9 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setSpeed(double speed) {
-    if(!bottom){
-      elevator.set(speed);
-    }
-    else if(bottom && speed > 0){
-      elevator.set(speed);
-    }
-    else{
-      stop();
-    }
+    elevator.set(speed);
   }
+
   public void setPosition(double position) {
     elevator.getClosedLoopController().setSetpoint(position, ControlType.kPosition);
   }
@@ -76,8 +77,6 @@ public class Elevator extends SubsystemBase {
     top = !upperLimitSwitch.get();
     bottom = !lowerLimitSwitch.get();
 
-    SmartDashboard.putBoolean("Bottom Switch", bottom);
-
     if(top){
       elevator.getEncoder().setPosition(maxHeight);
     }
@@ -85,5 +84,9 @@ public class Elevator extends SubsystemBase {
       elevator.getEncoder().setPosition(minHeight);
     }
      
+    SmartDashboard.putBoolean("Elevator Bottom Switch", bottom);
+    SmartDashboard.putBoolean("Elevator Top Switch", top);
+    
+    SmartDashboard.putNumber("Elevator Position", getPosition());
   }
 }
